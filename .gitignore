@@ -1,0 +1,66 @@
+# Log files
+*.log
+hs_err_pid*
+
+# Java class files
+*.class
+
+# Gradle files
+gradlew*
+.gradle/
+build/
+
+# Generated files
+bin/
+gen/
+
+# Local configuration files
+local.properties
+/local.properties
+
+# Package files
+*.apk
+*.ap_
+
+# Android Studio / IntelliJ
+*.iws
+*.iml
+*.ipr
+.idea
+/out/
+captures/
+.externalNativeBuild/
+.cxx/
+output.json
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# OS temporary files
+.DS_Store
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# For eclipse Eclipse
+proguard/
+
+# Android Patch ###
+gen-external-apk
+libs
+
+# Packaging files
+*.jar
+*.war
+*.ear
+
+# Keystore files
+*.jks
+*.keystore
+
+# Google Services (e.g. APIs or Firebase)
+google-services.json
+
+# Android Profiling
+*.hprof
