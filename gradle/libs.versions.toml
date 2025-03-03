@@ -11,6 +11,10 @@ hilt = "2.53.1"
 hiltNavigationCompose = "1.2.0"
 # Navigation
 navigationCompose = "2.8.8"
+kotlinSerialization = "2.0.0"
+kotlinSerializationJson = "1.8.0"
+# Images displaying
+coil = "2.7.0"
 # Testing
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -28,10 +32,13 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 # Navigation
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerializationJson" }
 # Dependency injection
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+# Images displaying
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -44,6 +51,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-serialization= { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
 # Dependency injection
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 

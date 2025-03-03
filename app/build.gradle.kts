@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -53,10 +54,13 @@ dependencies {
     implementation(libs.androidx.material3)
     // Navigation
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization)
     // Dependency injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
+    // Images displaying
+    implementation(libs.coil.compose)
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

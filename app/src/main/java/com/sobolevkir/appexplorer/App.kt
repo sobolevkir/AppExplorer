@@ -1,4 +1,4 @@
-package com.sobolevkir.aipostcard
+package com.sobolevkir.appexplorer
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

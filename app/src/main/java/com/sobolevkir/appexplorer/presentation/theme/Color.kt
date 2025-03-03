@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.ui.theme
+package com.sobolevkir.appexplorer.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

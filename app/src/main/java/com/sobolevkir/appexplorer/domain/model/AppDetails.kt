@@ -4,5 +4,6 @@ data class AppDetails(
     val packageName: String,
     val appName: String,
     val version: String,
-    val apkSha256: String
+    val iconStringUri: String?,
+    val apkSha256: String,
 )

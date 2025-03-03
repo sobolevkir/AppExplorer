@@ -1,6 +1,5 @@
-package com.sobolevkir.appexplorer.ui.theme
+package com.sobolevkir.appexplorer.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
