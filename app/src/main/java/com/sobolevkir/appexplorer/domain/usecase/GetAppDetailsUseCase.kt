@@ -7,7 +7,9 @@ import javax.inject.Inject
 class GetAppDetailsUseCase @Inject constructor(
     private val repository: AppsRepository
 ) {
+
     suspend operator fun invoke(packageName: String): AppDetails? {
         return repository.getAppDetails(packageName)
     }
+
 }

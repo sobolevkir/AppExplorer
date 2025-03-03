@@ -1,6 +1,8 @@
 package com.sobolevkir.appexplorer.di
 
 import android.content.Context
+import com.sobolevkir.appexplorer.data.ExternalNavigatorImpl
+import com.sobolevkir.appexplorer.domain.api.ExternalNavigator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,4 +19,11 @@ object AppModule {
     fun provideContext(@ApplicationContext context: Context): Context {
         return context
     }
+
+    @Provides
+    @Singleton
+    fun provideExternalNavigator(context: Context): ExternalNavigator {
+        return ExternalNavigatorImpl(context)
+    }
+
 }

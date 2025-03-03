@@ -64,7 +64,9 @@ fun AppDetailsScreen(
                     color = MaterialTheme.colorScheme.error
                 )
 
-                else -> uiState.appDetails?.let { AppDetailsContent(it) }
+                else -> uiState.appDetails?.let {
+                    AppDetailsContent(it, onOpenAppButtonClick = { viewModel.openApp() })
+                }
             }
         }
     }

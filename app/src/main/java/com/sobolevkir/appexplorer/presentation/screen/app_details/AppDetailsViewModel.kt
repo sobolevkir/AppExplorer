@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sobolevkir.appexplorer.domain.usecase.GetAppDetailsUseCase
+import com.sobolevkir.appexplorer.domain.usecase.OpenAppUseCase
 import com.sobolevkir.appexplorer.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getAppDetailsUseCase: GetAppDetailsUseCase
+    private val getAppDetailsUseCase: GetAppDetailsUseCase,
+    private val openAppUseCase: OpenAppUseCase
 ) : ViewModel() {
 
     private val packageName = Route.AppDetailsRoute.from(savedStateHandle).packageName
@@ -25,6 +27,10 @@ class AppDetailsViewModel @Inject constructor(
 
     init {
         loadAppDetails(packageName)
+    }
+
+    fun openApp() {
+        openAppUseCase(packageName)
     }
 
     private fun loadAppDetails(packageName: String) {

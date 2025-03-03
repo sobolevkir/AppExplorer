@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -27,14 +26,13 @@ import com.sobolevkir.appexplorer.R
 import com.sobolevkir.appexplorer.domain.model.AppDetails
 
 @Composable
-fun AppDetailsContent(appDetails: AppDetails) {
+fun AppDetailsContent(appDetails: AppDetails, onOpenAppButtonClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
 
-        val context = LocalContext.current
         val painter = appDetails.iconStringUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
             ?: rememberVectorPainter(Icons.Default.Warning)
         Image(
@@ -75,13 +73,8 @@ fun AppDetailsContent(appDetails: AppDetails) {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            onClick = {
-                val intent =
-                    context.packageManager.getLaunchIntentForPackage(appDetails.packageName)
-                if (intent != null) {
-                    context.startActivity(intent)
-                }
-            }) {
+            onClick = { onOpenAppButtonClick() }
+        ) {
             Text(stringResource(R.string.btn_open_app))
         }
     }
