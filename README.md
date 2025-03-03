@@ -1,5 +1,5 @@
 # AppExplorer
-An app that shows all the other apps installed on the device. SDK24+ support.
+An app that shows all the other apps installed on the device. Android 7.0 (SDK 24+) support.
 
 ## Stack
 - Clean Architecture
