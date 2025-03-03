@@ -1,6 +1,6 @@
 package com.sobolevkir.appexplorer.domain.usecase
 
-import com.sobolevkir.appexplorer.domain.AppsRepository
+import com.sobolevkir.appexplorer.domain.api.AppsRepository
 import com.sobolevkir.appexplorer.domain.model.AppItem
 import javax.inject.Inject
 

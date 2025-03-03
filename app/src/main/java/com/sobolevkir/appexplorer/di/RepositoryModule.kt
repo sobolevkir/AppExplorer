@@ -1,7 +1,7 @@
 package com.sobolevkir.appexplorer.di
 
 import com.sobolevkir.appexplorer.data.AppsRepositoryImpl
-import com.sobolevkir.appexplorer.domain.AppsRepository
+import com.sobolevkir.appexplorer.domain.api.AppsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

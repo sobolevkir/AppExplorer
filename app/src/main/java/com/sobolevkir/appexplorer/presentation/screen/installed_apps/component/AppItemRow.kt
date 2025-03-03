@@ -25,8 +25,8 @@ fun AppItemRow(appItem: AppItem, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
+            .padding(vertical = 12.dp)
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val painter = appItem.appIconUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
@@ -38,6 +38,6 @@ fun AppItemRow(appItem: AppItem, onClick: () -> Unit) {
             contentScale = ContentScale.FillWidth
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(appItem.appName, style = MaterialTheme.typography.bodyMedium)
+        Text(appItem.appName, style = MaterialTheme.typography.bodyLarge)
     }
 }

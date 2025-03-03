@@ -6,17 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -28,12 +31,12 @@ fun AppDetailsContent(appDetails: AppDetails) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
+
         val context = LocalContext.current
-        val painter =
-            appDetails.iconStringUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
-                ?: painterResource(id = android.R.drawable.ic_menu_info_details)
+        val painter = appDetails.iconStringUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
+            ?: rememberVectorPainter(Icons.Default.Warning)
         Image(
             painter = painter,
             contentDescription = null,
@@ -55,12 +58,18 @@ fun AppDetailsContent(appDetails: AppDetails) {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            stringResource(R.string.app_details_version, appDetails.version),
+            stringResource(
+                R.string.app_details_version,
+                appDetails.version ?: stringResource(R.string.no_value)
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            stringResource(R.string.app_details_sha256, appDetails.apkSha256),
+            stringResource(
+                R.string.app_details_sha256,
+                appDetails.apkSha256 ?: stringResource(R.string.no_value)
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(16.dp))

@@ -1,12 +1,14 @@
 package com.sobolevkir.appexplorer.data
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import com.sobolevkir.appexplorer.domain.AppsRepository
+import android.util.Log
+import com.sobolevkir.appexplorer.domain.api.AppsRepository
 import com.sobolevkir.appexplorer.domain.model.AppDetails
 import com.sobolevkir.appexplorer.domain.model.AppItem
 import kotlinx.coroutines.Dispatchers
@@ -22,37 +24,55 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
         get() = context.packageManager
 
     override suspend fun getInstalledApps(): List<AppItem> = withContext(Dispatchers.IO) {
-        val installedPackages = packageManager.getInstalledPackages(0)
-        installedPackages.map {
-            val packageName = it.packageName
-            val iconUri = it.applicationInfo?.loadIcon(packageManager)
-                ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
-            AppItem(
-                packageName = packageName,
-                appName = it.applicationInfo?.loadLabel(packageManager).toString(),
-                appIconUri = iconUri
-            )
+        val launchableApps = packageManager.queryIntentActivities(
+            Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }, 0
+        )
+
+        launchableApps.mapNotNull { app ->
+            val packageName = app.activityInfo.packageName
+            val appInfo = try {
+                packageManager.getApplicationInfo(packageName, 0)
+            } catch (e: Exception) {
+                null
+            }
+            appInfo?.let {
+                val iconUri = it.loadIcon(packageManager)
+                    ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
+                AppItem(
+                    packageName = packageName,
+                    appName = it.loadLabel(packageManager).toString(),
+                    appIconUri = iconUri
+                )
+            }
         }
     }
 
-    override suspend fun getAppDetails(packageName: String): AppDetails =
+    override suspend fun getAppDetails(packageName: String): AppDetails? =
         withContext(Dispatchers.IO) {
-            val packageInfo = packageManager.getPackageInfo(packageName, 0)
-            val appInfo = packageInfo.applicationInfo
-                ?: throw IllegalStateException("ApplicationInfo is null for package: $packageName")
-            val apkSha256 = computeSha256(File(appInfo.sourceDir))
-            val iconUri = appInfo.loadIcon(packageManager)
-                ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
-            AppDetails(
-                packageName = packageName,
-                appName = appInfo.loadLabel(packageManager).toString(),
-                version = packageInfo.versionName ?: "N/A",
-                apkSha256 = apkSha256,
-                iconStringUri = iconUri
-            )
+            try {
+                val packageInfo =
+                    packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
+                val appInfo = packageInfo.applicationInfo
+                    ?: throw IllegalStateException("applicationInfo == null для пакета: $packageName")
+                val iconUri = appInfo.loadIcon(packageManager)
+                    ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
+                AppDetails(
+                    packageName = packageName,
+                    appName = appInfo.loadLabel(packageManager).toString(),
+                    version = packageInfo.versionName,
+                    apkSha256 = computeSha256(File(appInfo.sourceDir)),
+                    iconStringUri = iconUri
+                )
+            } catch (e: PackageManager.NameNotFoundException) {
+                Log.e("Пакет не найден: $packageName", e.toString())
+                null
+            } catch (e: Exception) {
+                Log.e("Ошибка при получении данных о пакете: $packageName", e.toString())
+                null
+            }
         }
 
-    private fun computeSha256(file: File): String {
+    private fun computeSha256(file: File): String? {
         return try {
             val digest = MessageDigest.getInstance("SHA-256")
             file.inputStream().use { input ->
@@ -64,7 +84,8 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
             }
             digest.digest().joinToString("") { "%02x".format(it) }
         } catch (e: Exception) {
-            "Error computing SHA-256"
+            Log.e("Ошибка получения SHA-256 для файла: ${file.name}", e.toString())
+            null
         }
     }
 
@@ -96,7 +117,7 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
                 cachedFile.absolutePath
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("Ошибка сохранения иконки приложения: $packageName", e.toString())
             null
         }
     }
