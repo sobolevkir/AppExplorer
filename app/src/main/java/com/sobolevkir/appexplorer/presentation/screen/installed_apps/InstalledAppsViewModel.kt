@@ -3,7 +3,7 @@ package com.sobolevkir.appexplorer.presentation.screen.installed_apps
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sobolevkir.appexplorer.domain.model.AppItem
-import com.sobolevkir.appexplorer.domain.usecase.GetInstalledAppsUseCase
+import com.sobolevkir.appexplorer.domain.usecase.GetInstalledAppsFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InstalledAppsViewModel @Inject constructor(
-    private val getInstalledAppsUseCase: GetInstalledAppsUseCase
+    private val getInstalledAppsFlowUseCase: GetInstalledAppsFlowUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(InstalledAppsUiState())
@@ -25,13 +25,14 @@ class InstalledAppsViewModel @Inject constructor(
 
     private fun loadInstalledApps() {
         viewModelScope.launch {
-            val appList = getInstalledAppsUseCase()
-            _uiState.update { it.copy(isLoading = false, appList = appList) }
+            getInstalledAppsFlowUseCase().collect { appList ->
+                _uiState.update { it.copy(isLoading = false, appList = appList) }
+            }
         }
     }
 
     fun onSearchQueryChanged(query: String) {
-        if(query.isEmpty()) {
+        if (query.isEmpty()) {
             _uiState.update {
                 it.copy(searchQuery = query, filteredAppList = null)
             }

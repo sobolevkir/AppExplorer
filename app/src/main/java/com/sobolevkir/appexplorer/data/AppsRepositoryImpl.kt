@@ -1,7 +1,9 @@
 package com.sobolevkir.appexplorer.data
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -12,6 +14,10 @@ import com.sobolevkir.appexplorer.domain.api.AppsRepository
 import com.sobolevkir.appexplorer.domain.model.AppDetails
 import com.sobolevkir.appexplorer.domain.model.AppItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -23,29 +29,23 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
     private val packageManager: PackageManager
         get() = context.packageManager
 
-    override suspend fun getInstalledApps(): List<AppItem> = withContext(Dispatchers.IO) {
-        val launchableApps = packageManager.queryIntentActivities(
-            Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }, 0
-        )
-
-        launchableApps.mapNotNull { app ->
-            val packageName = app.activityInfo.packageName
-            val appInfo = try {
-                packageManager.getApplicationInfo(packageName, 0)
-            } catch (e: Exception) {
-                null
-            }
-            appInfo?.let {
-                val iconUri = it.loadIcon(packageManager)
-                    ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
-                AppItem(
-                    packageName = packageName,
-                    appName = it.loadLabel(packageManager).toString(),
-                    appIconUri = iconUri
-                )
+    override fun getInstalledAppsFlow(): Flow<List<AppItem>> = callbackFlow {
+        val sendAppsList = { trySend(loadInstalledApps()) }
+        val packageReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                sendAppsList()
             }
         }
-    }
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_PACKAGE_ADDED)
+            addAction(Intent.ACTION_PACKAGE_REMOVED)
+            addAction(Intent.ACTION_PACKAGE_CHANGED)
+            addDataScheme("package")
+        }
+        context.registerReceiver(packageReceiver, filter)
+        sendAppsList()
+        awaitClose { context.unregisterReceiver(packageReceiver) }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun getAppDetails(packageName: String): AppDetails? =
         withContext(Dispatchers.IO) {
@@ -71,6 +71,30 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
                 null
             }
         }
+
+    private fun loadInstalledApps(): List<AppItem> {
+        val launchableApps = packageManager.queryIntentActivities(
+            Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }, 0
+        )
+
+        return launchableApps.mapNotNull { app ->
+            val packageName = app.activityInfo.packageName
+            val appInfo = try {
+                packageManager.getApplicationInfo(packageName, 0)
+            } catch (e: Exception) {
+                null
+            }
+            appInfo?.let {
+                val iconUri = it.loadIcon(packageManager)
+                    ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
+                AppItem(
+                    packageName = packageName,
+                    appName = it.loadLabel(packageManager).toString(),
+                    appIconUri = iconUri
+                )
+            }
+        }
+    }
 
     private fun computeSha256(file: File): String? {
         return try {
