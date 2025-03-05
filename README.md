@@ -8,6 +8,7 @@ An app that shows all the other apps installed on the device. Android 7.0 (SDK 2
 - Hilt
 - MVVM
 - PackageManager
+- BroadcastReceiver
 
 ## Features
 - Displaying pre-installed applications and applications installed by the user in real time
