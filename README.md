@@ -10,7 +10,7 @@ An app that shows all the other apps installed on the device. Android 7.0 (SDK 2
 - PackageManager
 
 ## Features
-- Displaying pre-installed applications and applications installed by the user
+- Displaying pre-installed applications and applications installed by the user in real time
 - Viewing information about the application: version, package name, checksum of the apk file
 - Launching the selected application
 
