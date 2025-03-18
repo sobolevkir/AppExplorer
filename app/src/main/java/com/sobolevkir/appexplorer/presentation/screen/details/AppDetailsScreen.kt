@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.app_details
+package com.sobolevkir.appexplorer.presentation.screen.details
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sobolevkir.appexplorer.R
 import com.sobolevkir.appexplorer.presentation.navigation.Route
-import com.sobolevkir.appexplorer.presentation.screen.app_details.component.AppDetailsContent
+import com.sobolevkir.appexplorer.presentation.screen.details.component.AppDetailsContent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

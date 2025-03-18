@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.installed_apps.component
+package com.sobolevkir.appexplorer.presentation.screen.apps.component
 
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -30,7 +30,7 @@ fun AppItemRow(appItem: AppItem, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         val painter = appItem.appIconUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
-            ?: painterResource(id = android.R.drawable.ic_menu_info_details)
+            ?: painterResource(id = android.R.drawable.stat_sys_warning)
         Image(
             painter = painter,
             contentDescription = null,

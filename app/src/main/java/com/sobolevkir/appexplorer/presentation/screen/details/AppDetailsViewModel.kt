@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.app_details
+package com.sobolevkir.appexplorer.presentation.screen.details
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,6 +20,8 @@ class AppDetailsViewModel @Inject constructor(
     private val getAppDetailsUseCase: GetAppDetailsUseCase,
     private val openAppUseCase: OpenAppUseCase
 ) : ViewModel() {
+
+    private val mutex = Mutex()
 
     private val packageName = Route.AppDetailsRoute.from(savedStateHandle).packageName
 
@@ -35,8 +38,14 @@ class AppDetailsViewModel @Inject constructor(
 
     private fun loadAppDetails(packageName: String) {
         viewModelScope.launch {
+            mutex.lock()
             val appDetails = getAppDetailsUseCase(packageName)
             _uiState.update { it.copy(isLoading = false, appDetails = appDetails) }
         }
+    }
+
+    override fun onCleared() {
+        println("VIEWMODEL CLEARED!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        super.onCleared()
     }
 }

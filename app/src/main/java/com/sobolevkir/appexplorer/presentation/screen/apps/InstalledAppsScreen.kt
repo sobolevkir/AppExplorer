@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.installed_apps
+package com.sobolevkir.appexplorer.presentation.screen.apps
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -26,8 +30,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sobolevkir.appexplorer.R
 import com.sobolevkir.appexplorer.presentation.navigation.Route
-import com.sobolevkir.appexplorer.presentation.screen.installed_apps.component.AppItemRow
-import com.sobolevkir.appexplorer.presentation.screen.installed_apps.component.QueryTextField
+import com.sobolevkir.appexplorer.presentation.screen.apps.component.AppItemRow
+import com.sobolevkir.appexplorer.presentation.screen.apps.component.QueryTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,6 +40,10 @@ fun InstalledAppsScreen(
 ) {
     val viewModel: InstalledAppsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val filteredItems = remember(searchQuery, uiState.appList) {
+        uiState.appList.filter { it.appName.contains(searchQuery, ignoreCase = true) }
+    }
 
     Scaffold(
         topBar = {
@@ -62,10 +70,10 @@ fun InstalledAppsScreen(
                 else -> {
                     Column(modifier = Modifier.fillMaxSize()) {
                         QueryTextField(
-                            value = uiState.searchQuery,
-                            onValueChange = viewModel::onSearchQueryChanged
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it }
                         )
-                        if (uiState.filteredAppList?.isEmpty() == true) {
+                        if (filteredItems.isEmpty()) {
                             Spacer(modifier = Modifier.height(16.dp))
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
@@ -75,7 +83,7 @@ fun InstalledAppsScreen(
                             )
                         } else {
                             LazyColumn {
-                                items(uiState.filteredAppList ?: uiState.appList) { appItem ->
+                                items(filteredItems) { appItem ->
                                     AppItemRow(appItem) {
                                         onNavigateTo(Route.AppDetailsRoute(packageName = appItem.packageName))
                                     }

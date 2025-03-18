@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.installed_apps.component
+package com.sobolevkir.appexplorer.presentation.screen.apps.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions

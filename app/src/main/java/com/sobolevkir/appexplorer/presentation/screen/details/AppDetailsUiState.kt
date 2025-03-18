@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.app_details
+package com.sobolevkir.appexplorer.presentation.screen.details
 
 import com.sobolevkir.appexplorer.domain.model.AppDetails
 

@@ -1,4 +1,4 @@
-package com.sobolevkir.appexplorer.presentation.screen.app_details.component
+package com.sobolevkir.appexplorer.presentation.screen.details.component
 
 import android.net.Uri
 import androidx.compose.foundation.Image
