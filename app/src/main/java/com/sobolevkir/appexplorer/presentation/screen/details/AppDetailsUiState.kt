@@ -2,7 +2,7 @@ package com.sobolevkir.appexplorer.presentation.screen.details
 
 import com.sobolevkir.appexplorer.domain.model.AppDetails
 
-data class AppDetailsUiState (
+data class AppDetailsUiState(
     val isLoading: Boolean = true,
     val appDetails: AppDetails? = null,
 )

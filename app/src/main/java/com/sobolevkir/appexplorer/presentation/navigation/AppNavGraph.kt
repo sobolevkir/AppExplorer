@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sobolevkir.appexplorer.presentation.screen.details.AppDetailsScreen
 import com.sobolevkir.appexplorer.presentation.screen.apps.InstalledAppsScreen
+import com.sobolevkir.appexplorer.presentation.screen.details.AppDetailsScreen
 
 @Composable
 fun AppNavGraph(navController: NavHostController) {

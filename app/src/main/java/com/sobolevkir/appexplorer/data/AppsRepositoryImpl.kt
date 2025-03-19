@@ -5,10 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.Log
 import com.sobolevkir.appexplorer.domain.api.AppsRepository
 import com.sobolevkir.appexplorer.domain.model.AppDetails
@@ -20,7 +16,6 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.io.FileOutputStream
 import java.security.MessageDigest
 import javax.inject.Inject
 
@@ -54,14 +49,11 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
                     packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA)
                 val appInfo = packageInfo.applicationInfo
                     ?: throw IllegalStateException("applicationInfo == null для пакета: $packageName")
-                val iconUri = appInfo.loadIcon(packageManager)
-                    ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
                 AppDetails(
                     packageName = packageName,
                     appName = appInfo.loadLabel(packageManager).toString(),
                     version = packageInfo.versionName,
                     apkSha256 = computeSha256(File(appInfo.sourceDir)),
-                    iconStringUri = iconUri
                 )
             } catch (e: PackageManager.NameNotFoundException) {
                 Log.e("Пакет не найден: $packageName", e.toString())
@@ -85,12 +77,9 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
                 null
             }
             appInfo?.let {
-                val iconUri = it.loadIcon(packageManager)
-                    ?.let { drawableIcon -> getDrawableUri(drawableIcon, packageName) }
                 AppItem(
                     packageName = packageName,
                     appName = it.loadLabel(packageManager).toString(),
-                    appIconUri = iconUri
                 )
             }
         }
@@ -109,39 +98,6 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
             digest.digest().joinToString("") { "%02x".format(it) }
         } catch (e: Exception) {
             Log.e("Ошибка получения SHA-256 для файла: ${file.name}", e.toString())
-            null
-        }
-    }
-
-    private fun getDrawableUri(drawable: Drawable, packageName: String): String? {
-        val cachedFile = File(context.cacheDir, "icon_${packageName}.png")
-        if (cachedFile.exists()) {
-            return cachedFile.absolutePath
-        }
-        return try {
-            val bitmap = when (drawable) {
-                is BitmapDrawable -> drawable.bitmap
-                else -> {
-                    val bitmap = Bitmap.createBitmap(
-                        drawable.intrinsicWidth,
-                        drawable.intrinsicHeight,
-                        Bitmap.Config.ARGB_8888
-                    )
-                    val canvas = Canvas(bitmap)
-                    drawable.setBounds(0, 0, canvas.width, canvas.height)
-                    drawable.draw(canvas)
-                    bitmap
-                }
-            }
-            bitmap?.let {
-                val outputStream = FileOutputStream(cachedFile)
-                it.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.flush()
-                outputStream.close()
-                cachedFile.absolutePath
-            }
-        } catch (e: Exception) {
-            Log.e("Ошибка сохранения иконки приложения: $packageName", e.toString())
             null
         }
     }

@@ -1,6 +1,5 @@
 package com.sobolevkir.appexplorer.presentation.screen.apps.component
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -15,13 +14,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.sobolevkir.appexplorer.domain.model.AppItem
 
 @Composable
 fun AppItemRow(appItem: AppItem, onClick: () -> Unit) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,10 +29,9 @@ fun AppItemRow(appItem: AppItem, onClick: () -> Unit) {
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val painter = appItem.appIconUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
-            ?: painterResource(id = android.R.drawable.stat_sys_warning)
+        val icon = context.packageManager.getApplicationIcon(appItem.packageName)
         Image(
-            painter = painter,
+            painter = rememberAsyncImagePainter(icon),
             contentDescription = null,
             modifier = Modifier.size(48.dp),
             contentScale = ContentScale.FillWidth

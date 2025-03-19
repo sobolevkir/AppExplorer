@@ -38,7 +38,7 @@ import com.sobolevkir.appexplorer.presentation.screen.apps.component.QueryTextFi
 fun InstalledAppsScreen(
     onNavigateTo: (Route) -> Unit = {}
 ) {
-    val viewModel: InstalledAppsViewModel = hiltViewModel()
+    val viewModel: AppsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val filteredItems = remember(searchQuery, uiState.appList) {

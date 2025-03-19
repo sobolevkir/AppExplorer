@@ -1,6 +1,5 @@
 package com.sobolevkir.appexplorer.presentation.screen.details.component
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,16 +8,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -27,16 +24,15 @@ import com.sobolevkir.appexplorer.domain.model.AppDetails
 
 @Composable
 fun AppDetailsContent(appDetails: AppDetails, onOpenAppButtonClick: () -> Unit) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
-
-        val painter = appDetails.iconStringUri?.let { rememberAsyncImagePainter(Uri.parse(it)) }
-            ?: rememberVectorPainter(Icons.Default.Warning)
+        val icon = context.packageManager.getApplicationIcon(appDetails.packageName)
         Image(
-            painter = painter,
+            painter = rememberAsyncImagePainter(icon),
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp)

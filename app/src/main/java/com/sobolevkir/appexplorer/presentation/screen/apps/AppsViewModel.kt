@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class InstalledAppsViewModel @Inject constructor(
+class AppsViewModel @Inject constructor(
     private val getInstalledAppsFlowUseCase: GetInstalledAppsFlowUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(InstalledAppsUiState())
-    val uiState: StateFlow<InstalledAppsUiState> = _uiState
+    private val _uiState = MutableStateFlow(AppsUiState())
+    val uiState: StateFlow<AppsUiState> = _uiState
 
     init {
         loadInstalledApps()
