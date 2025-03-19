@@ -1,5 +1,6 @@
 package com.sobolevkir.appexplorer.presentation.screen.apps
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sobolevkir.appexplorer.domain.usecase.GetInstalledAppsFlowUseCase
@@ -22,6 +23,7 @@ class AppsViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppsUiState())
 
     private fun loadInstalledApps() {
+        Log.d("123123123", "sdasdadfsdf")
         viewModelScope.launch {
             getInstalledAppsFlowUseCase().collect { appList ->
                 _uiState.update { it.copy(isLoading = false, appList = appList) }
