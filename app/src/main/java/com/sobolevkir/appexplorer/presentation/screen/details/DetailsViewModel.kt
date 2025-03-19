@@ -8,29 +8,27 @@ import com.sobolevkir.appexplorer.domain.usecase.OpenAppUseCase
 import com.sobolevkir.appexplorer.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 @HiltViewModel
-class AppDetailsViewModel @Inject constructor(
+class DetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getAppDetailsUseCase: GetAppDetailsUseCase,
     private val openAppUseCase: OpenAppUseCase
 ) : ViewModel() {
 
-    private val mutex = Mutex()
-
     private val packageName = Route.AppDetailsRoute.from(savedStateHandle).packageName
 
-    private val _uiState = MutableStateFlow(AppDetailsUiState())
-    val uiState: StateFlow<AppDetailsUiState> = _uiState
-
-    init {
-        loadAppDetails(packageName)
-    }
+    private val _uiState = MutableStateFlow(DetailsUiState())
+    val uiState: StateFlow<DetailsUiState> = _uiState
+        .onStart { loadAppDetails(packageName) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), DetailsUiState())
 
     fun openApp() {
         openAppUseCase(packageName)
@@ -38,14 +36,8 @@ class AppDetailsViewModel @Inject constructor(
 
     private fun loadAppDetails(packageName: String) {
         viewModelScope.launch {
-            mutex.lock()
             val appDetails = getAppDetailsUseCase(packageName)
             _uiState.update { it.copy(isLoading = false, appDetails = appDetails) }
         }
-    }
-
-    override fun onCleared() {
-        println("VIEWMODEL CLEARED!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        super.onCleared()
     }
 }

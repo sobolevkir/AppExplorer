@@ -31,7 +31,7 @@ fun AppDetailsScreen(
     onNavigateTo: (Route) -> Unit = {},
 ) {
 
-    val viewModel: AppDetailsViewModel = hiltViewModel()
+    val viewModel: DetailsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(

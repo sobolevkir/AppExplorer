@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.sobolevkir.appexplorer.domain.usecase.GetInstalledAppsFlowUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,11 +18,8 @@ class AppsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppsUiState())
-    val uiState: StateFlow<AppsUiState> = _uiState
-
-    init {
-        loadInstalledApps()
-    }
+    val uiState = _uiState.onStart { loadInstalledApps() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppsUiState())
 
     private fun loadInstalledApps() {
         viewModelScope.launch {
