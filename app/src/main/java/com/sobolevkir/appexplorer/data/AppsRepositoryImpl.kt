@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.security.MessageDigest
@@ -25,10 +26,11 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
         get() = context.packageManager
 
     override fun getInstalledAppsFlow(): Flow<List<AppItem>> = callbackFlow {
-        val sendAppsList = { trySend(loadInstalledApps()) }
         val packageReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                sendAppsList()
+                launch(Dispatchers.IO) {
+                    trySend(loadInstalledApps())
+                }
             }
         }
         val filter = IntentFilter().apply {
@@ -38,7 +40,7 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
             addDataScheme("package")
         }
         context.registerReceiver(packageReceiver, filter)
-        sendAppsList()
+        trySend(loadInstalledApps())
         awaitClose { context.unregisterReceiver(packageReceiver) }
     }.flowOn(Dispatchers.IO)
 
@@ -65,6 +67,7 @@ class AppsRepositoryImpl @Inject constructor(private val context: Context) : App
         }
 
     private fun loadInstalledApps(): List<AppItem> {
+        Thread.sleep(10000)
         val launchableApps = packageManager.queryIntentActivities(
             Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }, 0
         )
